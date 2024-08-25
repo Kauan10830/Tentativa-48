@@ -31,7 +31,7 @@
             margin-top: 20px;
         }
 
-        #congratulations {
+        #congratulations, #game-over {
             margin-top: 20px;
         }
 
@@ -52,12 +52,15 @@
         <button id="no-btn">Não</button>
     </div>
     <div id="game-container" style="display: none;">
-        <p>Você tem que fazer 20 para receber o prêmio!</p>
+        <p>Você tem que fazer 10 para receber o prêmio!</p>
         <canvas id="game-canvas" width="800" height="400"></canvas>
         <p id="score">Pontuação: 0</p>
     </div>
     <div id="congratulations" style="display: none;">
         <p id="message">Parabéns ❤️❤️ você ganhou o bolinho de chocolate</p>
+    </div>
+    <div id="game-over" style="display: none;">
+        <p>Você perdeu! <button id="restart-btn">Recomeçar jogo</button></p>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -66,7 +69,9 @@
             const messageContainer = document.getElementById('message-container');
             const gameContainer = document.getElementById('game-container');
             const congratulations = document.getElementById('congratulations');
+            const gameOver = document.getElementById('game-over');
             const messageElement = document.getElementById('message');
+            const restartButton = document.getElementById('restart-btn');
 
             yesButton.addEventListener('click', () => {
                 messageContainer.style.display = 'none';
@@ -80,6 +85,12 @@
                 noButton.style.left = `${Math.random() * 80 + 10}%`;
             });
 
+            restartButton.addEventListener('click', () => {
+                gameOver.style.display = 'none';
+                gameContainer.style.display = 'block';
+                startGame();
+            });
+
             function startGame() {
                 const canvas = document.getElementById('game-canvas');
                 const ctx = canvas.getContext('2d');
@@ -89,7 +100,7 @@
                 const obstacles = [];
                 const player = {
                     x: 50,
-                    y: canvas.height - 40,
+                    y: canvas.height - 30,
                     width: 30,
                     height: 30,
                     jump: 0,
@@ -114,12 +125,12 @@
                     drawObstacles();
 
                     if (player.jumping) {
-                        player.jump += 4;
-                        if (player.jump >= 50) {
+                        player.jump += 6;
+                        if (player.jump >= 70) {
                             player.jumping = false;
                         }
                     } else if (player.jump > 0) {
-                        player.jump -= 4;
+                        player.jump -= 6;
                         if (player.jump <= 0) {
                             player.jump = 0;
                         }
@@ -141,7 +152,7 @@
                         }
                     });
 
-                    if (score >= 20) {
+                    if (score >= 10) {
                         endGame(true);
                     }
                 }
@@ -149,16 +160,12 @@
                 function endGame(win = false) {
                     clearInterval(gameInterval);
                     gameContainer.style.display = 'none';
-                    congratulations.style.display = 'block';
                     if (win) {
+                        congratulations.style.display = 'block';
                         messageElement.innerHTML = 'Parabéns ❤️❤️ você ganhou o bolinho de chocolate';
                         showCakeEmojis();
                     } else {
-                        setTimeout(() => {
-                            gameContainer.style.display = 'block';
-                            congratulations.style.display = 'none';
-                            startGame();
-                        }, 2000);
+                        gameOver.style.display = 'block';
                     }
                 }
 
